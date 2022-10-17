@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AptosClient,CoinClient,AptosAccount } from 'aptos'
+import { AptosClient, CoinClient, AptosAccount } from 'aptos'
 import { AppState, AppDispatch } from '../../state'
 import { aptosAddress } from './actions'
 import config from '../../config'
@@ -8,7 +8,7 @@ export function isTempAddress(address: string): boolean | string {
   return address //true: address; false: false
 }
 
-export function useTempAddress() {
+export function useAptosAddress() {
   const account: any = useSelector<AppState, AppState['aptos']>(state => state.aptos.aptosAddress)
   return {
     aptosAddress: account
@@ -36,37 +36,44 @@ export function useLoginAptos() {
   }
 }
 
-const initAptos = (chainId:string)=>{
-  const client = new AptosClient(config.chainInfo[chainId].nodeRpc);
-  const coinClient = new CoinClient(client);
-  return coinClient;
-};
+const initAptos = (chainId: string) => {
+  const client = new AptosClient(config.chainInfo[chainId].nodeRpc)
+  const coinClient = new CoinClient(client)
+  return coinClient
+}
+
 /**
  * Get native balance and token balance
  *
  * @param account wallet address
  * @param token token address
  */
-
-
 export function useAptosBalance() {
-  const getAptosBalance = useCallback(({chainId, account }: { chainId: any ,account: string}) => {
-    return new Promise(async(resolve) => {
-      const aptosClient = initAptos(chainId);
+  const getAptosBalance = useCallback(({ chainId, account }: { chainId: any; account: string }) => {
+    return new Promise(async resolve => {
+      const aptosClient = initAptos(chainId)
       if (account) {
-        const ac = new AptosAccount(undefined,account);
-        const balance = await aptosClient.checkBalance(ac);
-        resolve(balance)
+        const ac = new AptosAccount(undefined, account)
+        const balance = await aptosClient.checkBalance(ac)
+        resolve(Number(balance) / 100000000)
       }
     })
   }, [])
   const getAptosTokenBalance = useCallback(
-    ({ chainId,account, token }: {chainId: any, account: string | null | undefined; token: string | null | undefined }) => {
-      return new Promise(async(resolve) => {
-        const aptosClient = initAptos(chainId);
+    ({
+      chainId,
+      account,
+      token
+    }: {
+      chainId: any
+      account: string | null | undefined
+      token: string | null | undefined
+    }) => {
+      return new Promise(async resolve => {
+        const aptosClient = initAptos(chainId)
         if (account && token) {
-          const ac = new AptosAccount(undefined,account);
-          const balance = await aptosClient.checkBalance(ac,{coinType:token});
+          const ac = new AptosAccount(undefined, account)
+          const balance = await aptosClient.checkBalance(ac, { coinType: token })
           resolve(balance)
         }
       })
@@ -115,34 +122,42 @@ export function useAptosBalance() {
 //   }
 // }
 
-// enum State {
-//   Success = 'Success',
-//   Failure = 'Failure',
-//   Null = 'Null',
-// }
+enum State {
+  Success = 'Success',
+  Failure = 'Failure',
+  Null = 'Null'
+}
 
-// interface TxDataResult {
-//   msg: State,
-//   info: any,
-//   error: any
-// }
-// /**
-//  * Get transaction info
-//  *
-//  * @param txid transaction hash
-//  */
-// export function getTempTxnsStatus (txid:string) {
-//   return new Promise(resolve => {
-//     const data:TxDataResult = {
-//       msg: State.Null,
-//       info: '',
-//       error: ''
-//     }
-//     if (txid) {
-//       resolve(data)
-//     }
-//   })
-// }
+interface TxDataResult {
+  msg: State
+  info: any
+  error: any
+}
+/**
+ * Get transaction info
+ *
+ * @param txid transaction hash
+ */
+export function getAptosTxnsStatus(txid: string, chainId: string) {
+  return new Promise(async resolve => {
+    const aptosClient = initAptos(chainId)
+    if (!txid) return
+    const data: TxDataResult = {
+      msg: State.Null,
+      info: '',
+      error: ''
+    }
+    try {
+      const tx:any = await aptosClient.aptosClient.getTransactionByHash(txid)
+      data.msg = tx.success ? State.Success : State.Failure;
+      data.info = tx.vm_status;
+    } catch (e) {
+      data.msg = State.Null
+      data.info = 'invalid hash'
+    }
+    resolve(data)
+  })
+}
 
 // /**
 //  * Cross chain
