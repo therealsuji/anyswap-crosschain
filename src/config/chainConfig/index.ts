@@ -77,6 +77,7 @@ import ethw from './ethw'
 import sol from './sol'
 import xana from './xana'
 import twemix from './twemix'
+import apt from './apt'
 
 import { ChainId } from './chainId'
 
@@ -165,6 +166,7 @@ export const chainInfo:ConFig = {
   ...rei,
   ...cfx,
   ...rbtc,
+  ...apt
 }
 const allChainList = [
   ChainId.ETH,
