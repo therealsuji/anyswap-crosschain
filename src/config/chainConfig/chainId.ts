@@ -97,6 +97,7 @@ export enum ChainId {
   SOL = 'SOL',
   SOL_TEST = 'SOL_TEST',
   APT_DEV = 'APT_DEV',
+  APT = 'APT',
   APT_TEST = 'APT_TEST',
   XANA = '',
   XANA_TEST = '76798',

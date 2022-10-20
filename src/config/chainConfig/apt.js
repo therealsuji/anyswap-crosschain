@@ -9,6 +9,10 @@ export const APT_TESTNET = 'https://testnet.aptoslabs.com'
 export const APT_TEST_CHAINID = ChainId.APT_TEST
 export const APT_TEST_EXPLORER = 'https://explorer.aptoslabs.com/?network=testnet'
 
+export const APT_MAINNET = 'https://fullnode.mainnet.aptoslabs.com'
+export const APT_MAINNET_CHAINID = ChainId.APT
+export const APT_MAINNET_EXPLORER = 'https://explorer.aptoslabs.com/?network=mainnet'
+
 const symbol = 'APT'
 
 const bridgeToken = {
@@ -58,5 +62,25 @@ export default {
     type: 'test',
     label: APT_TEST_CHAINID,
     chainType: APT_TEST_CHAINID
+  },
+  [APT_MAINNET_CHAINID]: {
+    ...bridgeToken[USE_VERSION],
+    multicalToken: '',
+    v1FactoryToken: '',
+    v2FactoryToken: '',
+    nodeRpc: APT_MAINNET,
+    chainID: APT_MAINNET_CHAINID,
+    nodeRpcList: [],
+    lookHash: APT_MAINNET_EXPLORER + '/txn/',
+    lookAddr: APT_MAINNET_EXPLORER + '/account/',
+    lookBlock: APT_MAINNET_EXPLORER + '/block/',
+    explorer: APT_MAINNET_EXPLORER,
+    symbol: symbol,
+    name: 'Aptos',
+    networkName: 'Aptos Mainnet',
+    networkLogo: 'APT',
+    type: 'main',
+    label: APT_MAINNET_CHAINID,
+    chainType: APT_MAINNET_CHAINID
   },
 }
